@@ -90,30 +90,40 @@ function fr_getactivitelist_func( $atts ){
 		<input type="hidden" name="step" value="<?php echo $step ?>" />
     
 	<div id="activite" style="<?php echo ($step==1?"visibility:visible":"display:none") ?>;">
-		<ul>
+		<table>
 <?php
 	if ($step == 1){
 		$ladate = "";
 		$prevdate = "";
 		$format = 'Y-m-d H:i:s';
 		
-		$results = $wpdb->get_results( 'SELECT * FROM ' . $tableprefix . 'activite  ORDER BY date' );
+		$query = 'SELECT ' . $tableprefix . 'activite.ID as activite_id, ' . $tableprefix . 'activite.nom as activite_name,   ' . $tableprefix . 'activite.date as activite_date,
+					' . $tableprefix . 'occurrence_activite.ID as occurrence_id, 
+					' . $tableprefix . 'occurrence_activite.heure_debut as occurrence_heure_debut, ' . $tableprefix . 'occurrence_activite.heure_fin as occurrence_heure_fin,
+					' . $tableprefix . 'occurrence_activite.nbre_participants as occurrence_nbre_participants,
+   			(select count(*) from ' . $tableprefix . 'occurrence_personne where id_occurrence=' . $tableprefix . 'occurrence_activite.ID)  as occurrence_nbre_inscrits
+   			FROM ' . $tableprefix . 'activite LEFT JOIN ' . $tableprefix . 'occurrence_activite ON ' . $tableprefix . 'occurrence_activite.id_activite = ' . $tableprefix . 'activite.ID 
+   			order by ' . $tableprefix . 'activite.date, ' . $tableprefix . 'occurrence_activite.heure_debut';
+		$results = $wpdb->get_results( $query );
+
 		foreach ( $results as $result ) 
 		{
-			//$date = DateTime::createFromFormat($format, $result->date);
-			$date = date_parse($result->date);
+			echo "<tr>";
+			$date = DateTime::createFromFormat($format, $result->activite_date);
+			//$date = date_parse($result->date);
 			//$date = explode('-',$result->date);
-			//$ladate = $date->format("d/m/Y");
-			$ladate = $date["day"].'/'.$date["month"].'/'.$date["year"];
+			$ladate = $date->format("d/m/Y");
+			//$ladate = $date["day"].'/'.$date["month"].'/'.$date["year"];
 			if ($ladate <> $prevdate) {
-				echo "<li>".$ladate."</li>";
+				echo "<td>".$ladate."</td>";
 				$prevdate = $ladate;
-			}
-			echo "<div name='activite_".$result->ID."'><input name='activite' type='radio' value='".$result->ID."'>&nbsp;<label>".$result->nom."</label></div>";
+			} else { echo "<td>&nbsp;</td>";}
+			echo "<td name='activite_".$result->activite_id."'><input name='activite' type='radio' value='".$result->activite_id."'>&nbsp;<label>".$result->activite_name."</label></td>";
+			echo "</tr>";
 		}
 	}		
 ?>
-		</ul>
+		</table>
 	</div>
 	<div id="occurrence" style="<?php echo ($step==2?"visibility:visible":"display:none") ?>;">
 		<div id="occurrence_activite">
