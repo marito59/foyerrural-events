@@ -1,0 +1,18 @@
+#header_summary {
+}
+
+p  	{
+		margin-botton: 6pt;
+	}
+	
+#activite li {
+	font-weight: bold;
+}	
+
+table#navigation {
+	border: 0;
+}
+
+td {
+	border-width: 0;
+}
