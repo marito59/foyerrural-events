@@ -66,11 +66,11 @@ function fr_getactivitelist_func( $atts ){
 		}
 	</script>
 	<div id="phase">
-		<span id="phase_1" style="font-weight: <?php echo ($step==1?"bold":"normal")?>;">1 - Activit&eacute;</span>
-		<span id="phase_2" style="font-weight: <?php echo ($step==2?"bold":"normal")?>;">2 - Horaire</span>
-		<span id="phase_3" style="font-weight: <?php echo ($step==3?"bold":"normal")?>;">3 - Coordonn&eacute;es</span>
-		<span id="phase_4" style="font-weight: <?php echo ($step==4?"bold":"normal")?>;">4 - Confirmation</span>
-		<span id="phase_5" style="font-weight: <?php echo ($step==5?"bold":"normal")?>;">5 - Fin</span>
+		<span id="phase_1"><img src="<?php echo ($step==1?plugin_dir_url( __FILE__ )."images/un-select.png":plugin_dir_url( __FILE__ )."images/un.png")?>" /></span>
+		<span id="phase_2"><img src="<?php echo ($step==2?plugin_dir_url( __FILE__ )."images/deux-select.png":plugin_dir_url( __FILE__ )."images/deux.png")?>" /></span>
+		<span id="phase_3"><img src="<?php echo ($step==3?plugin_dir_url( __FILE__ )."images/trois-select.png":plugin_dir_url( __FILE__ )."images/trois.png")?>" /></span>
+		<span id="phase_4"><img src="<?php echo ($step==4?plugin_dir_url( __FILE__ )."images/quatre-select.png":plugin_dir_url( __FILE__ )."images/quatre.png")?>" /></span>
+	
 	</div>
 	<div id="header_summary">
 		<p style='<?php echo ($personne_name == ""?"display:none;":"")?> margin-bottom:3px'>Vous : <span id="header_nom" style="font-weight:bold; visibility:block;"><?php echo $personne_name ?></span></p>
@@ -95,13 +95,14 @@ function fr_getactivitelist_func( $atts ){
 	if ($step == 1){
 		$ladate = "";
 		$prevdate = "";
+		$prevactiviteid = "";
 		$format = 'Y-m-d H:i:s';
 		
 		$query = 'SELECT ' . $tableprefix . 'activite.ID as activite_id, ' . $tableprefix . 'activite.nom as activite_name,   ' . $tableprefix . 'activite.date as activite_date,
 					' . $tableprefix . 'occurrence_activite.ID as occurrence_id, 
-					' . $tableprefix . 'occurrence_activite.heure_debut as occurrence_heure_debut, ' . $tableprefix . 'occurrence_activite.heure_fin as occurrence_heure_fin,
-					' . $tableprefix . 'occurrence_activite.nbre_participants as occurrence_nbre_participants,
-   			(select count(*) from ' . $tableprefix . 'occurrence_personne where id_occurrence=' . $tableprefix . 'occurrence_activite.ID)  as occurrence_nbre_inscrits
+					' . $tableprefix . 'occurrence_activite.heure_debut as heure_debut, ' . $tableprefix . 'occurrence_activite.heure_fin as heure_fin,
+					' . $tableprefix . 'occurrence_activite.nbre_participants as nbre_participants,
+   			(select count(*) from ' . $tableprefix . 'occurrence_personne where id_occurrence=' . $tableprefix . 'occurrence_activite.ID)  as nbre_inscrits
    			FROM ' . $tableprefix . 'activite LEFT JOIN ' . $tableprefix . 'occurrence_activite ON ' . $tableprefix . 'occurrence_activite.id_activite = ' . $tableprefix . 'activite.ID 
    			order by ' . $tableprefix . 'activite.date, ' . $tableprefix . 'occurrence_activite.heure_debut';
 		$results = $wpdb->get_results( $query );
@@ -117,8 +118,18 @@ function fr_getactivitelist_func( $atts ){
 			if ($ladate <> $prevdate) {
 				echo "<td>".$ladate."</td>";
 				$prevdate = $ladate;
-			} else { echo "<td>&nbsp;</td>";}
-			echo "<td name='activite_".$result->activite_id."'><input name='activite' type='radio' value='".$result->activite_id."'>&nbsp;<label>".$result->activite_name."</label></td>";
+			} else { 
+				echo "<td>&nbsp;</td>";
+			}
+			if ($result->activite_id <> $prevactiviteid) {
+				echo "<td name='activite_".$result->activite_id."'><input name='activite' type='radio' value='".$result->activite_id."'>&nbsp;<label>".$result->activite_name."</label></td>";
+				$prevactiviteid = $result->activite_id;
+			} else {
+				echo "<td>&nbsp;</td>";
+			}
+			$places = $result->nbre_participants - $result->nbre_inscrits;
+			echo "<td name='occurrence'><input id='occurrence".$result->occurrence_id."' type='checkbox' value='".$result->occurrence_id."'>&nbsp;<label>".$result->heure_debut."-".$result->heure_fin."</label> (nbre de places restants : ".$places.")</td>";
+
 			echo "</tr>";
 		}
 	}		
