@@ -28,10 +28,10 @@ function fr_getactivitelist_func( $atts ){
 ?>	
 	<script>
 		function process_step(arg) {
-			if (arg==1) {
+			if (arg==99) {
 				jQuery("input[name=activite_id]").val(jQuery('input[name=activite]:checked').val());
 				jQuery("input[name=activite_name]").val(jQuery('input[name=activite]:checked').next('label:first').html());
-			} else if (arg==2) {
+			} else if (arg==1) {
 				var selected = [];
 				var occurrence_name = [];
 				jQuery('input[name=occurrence]:checked').each(function() {
@@ -66,10 +66,10 @@ function fr_getactivitelist_func( $atts ){
 		}
 	</script>
 	<div id="phase">
-		<span id="phase_1"><img src="<?php echo ($step==1?plugin_dir_url( __FILE__ )."images/un-select.png":plugin_dir_url( __FILE__ )."images/un.png")?>" /></span>
-		<span id="phase_2"><img src="<?php echo ($step==2?plugin_dir_url( __FILE__ )."images/deux-select.png":plugin_dir_url( __FILE__ )."images/deux.png")?>" /></span>
-		<span id="phase_3"><img src="<?php echo ($step==3?plugin_dir_url( __FILE__ )."images/trois-select.png":plugin_dir_url( __FILE__ )."images/trois.png")?>" /></span>
-		<span id="phase_4"><img src="<?php echo ($step==4?plugin_dir_url( __FILE__ )."images/quatre-select.png":plugin_dir_url( __FILE__ )."images/quatre.png")?>" /></span>
+		<span id="phase_1"><img src="<?php echo ($step==1?plugin_dir_url( __FILE__ )."images/slice_s_1.png":plugin_dir_url( __FILE__ )."images/slice_1.png")?>" /></span>
+		<span id="phase_2"><img src="<?php echo ($step==2?plugin_dir_url( __FILE__ )."images/slice_s_2.png":plugin_dir_url( __FILE__ )."images/slice_2.png")?>" /></span>
+		<span id="phase_3"><img src="<?php echo ($step==3?plugin_dir_url( __FILE__ )."images/slice_s_3.png":plugin_dir_url( __FILE__ )."images/slice_3.png")?>" /></span>
+		<span id="phase_4"><img src="<?php echo ($step==4?plugin_dir_url( __FILE__ )."images/slice_s_1.png":plugin_dir_url( __FILE__ )."images/slice_4.png")?>" /></span>
 	
 	</div>
 	<div id="header_summary">
@@ -128,7 +128,7 @@ function fr_getactivitelist_func( $atts ){
 				echo "<td>&nbsp;</td>";
 			}
 			$places = $result->nbre_participants - $result->nbre_inscrits;
-			echo "<td name='occurrence'><input id='occurrence".$result->occurrence_id."' type='checkbox' value='".$result->occurrence_id."'>&nbsp;<label>".$result->heure_debut."-".$result->heure_fin."</label> (nbre de places restants : ".$places.")</td>";
+			echo "<td name='occurrence'><input name='activite_<?php echo $result->activite_id?>' id='occurrence".$result->occurrence_id."' type='checkbox' value='".$result->occurrence_id."'>&nbsp;<label>".$result->heure_debut."-".$result->heure_fin."</label> (nbre de places restants : ".$places.")</td>";
 
 			echo "</tr>";
 		}
