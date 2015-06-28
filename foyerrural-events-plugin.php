@@ -1,5 +1,5 @@
 <?php
-/* admin functions
+/* init functions
  *
  */
 
@@ -21,15 +21,26 @@ function plugin_activation( $network_wide ) {
 		$charset_collate .= " COLLATE $wpdb->collate";
 
 	//Events table
-	$sql_activites_table = "CREATE TABLE IF NOT EXISTS " . $tableprefix . "activite (
+	/*$sql_activites_table = "CREATE TABLE IF NOT EXISTS " . $tableprefix . "activite (
  		`ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
   		`nom` varchar(45) NOT NULL,
   		`date` datetime NOT NULL,
  		 `Camion` tinyint(1) NOT NULL,
   		PRIMARY KEY (`ID`)
-		)" . $charset_collate . " ROW_FORMAT=COMPACT AUTO_INCREMENT=21" ;
+		)" . $charset_collate . " ROW_FORMAT=COMPACT AUTO_INCREMENT=21" ;*/
 
-	$sql_occurrence_table = "CREATE TABLE IF NOT EXISTS " . $tableprefix . "occurrence (
+$sql_activites_table = "CREATE TABLE IF NOT EXISTS `" . $tableprefix . "activite` (
+`ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `nom` varchar(120) NOT NULL,
+  `date` datetime NOT NULL,
+  `Camion` tinyint(1) NOT NULL,
+  `order` int(11) NOT NULL,
+  PRIMARY KEY (`ID`)
+)" . $charset_collate . " ENGINE=InnoDB ROW_FORMAT=COMPACT";
+		
+	
+
+/*	$sql_occurrence_table = "CREATE TABLE IF NOT EXISTS " . $tableprefix . "occurrence (
 		  `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
 		  `id_activite` int(10) unsigned NOT NULL,
 		  `heure_debut` time NOT NULL,
@@ -37,9 +48,19 @@ function plugin_activation( $network_wide ) {
 		  `nbre_participants` int(10) unsigned NOT NULL,
 		  PRIMARY KEY (`ID`),
 		  KEY `FK_id_activite_1` (`id_activite`)		
-	  	)" . $charset_collate . " ROW_FORMAT=COMPACT AUTO_INCREMENT=8" ;
+	  	)" . $charset_collate . " ROW_FORMAT=COMPACT AUTO_INCREMENT=8" ;*/
+		  
+$sql_occurrence_table = "CREATE TABLE IF NOT EXISTS `" . $tableprefix . "occurrence_activite` (
+`ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id_activite` int(10) unsigned NOT NULL,
+  `heure_debut` time NOT NULL,
+  `heure_fin` time NOT NULL,
+  `nbre_participants` int(10) unsigned NOT NULL,
+		  PRIMARY KEY (`ID`),
+		  KEY `FK_id_activite_1` (`id_activite`)		
+)" . $charset_collate . " ENGINE=InnoDB ROW_FORMAT=COMPACT";
 	
-	$sql_personne_table = "CREATE TABLE IF NOT EXISTS " . $tableprefix . "occurrence_personne (
+	/*$sql_personne_table = "CREATE TABLE IF NOT EXISTS " . $tableprefix . "occurrence_personne (
 		 `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
 		  `nom` varchar(45) NOT NULL,
 		  `prenom` varchar(45) NOT NULL,
@@ -50,9 +71,21 @@ function plugin_activation( $network_wide ) {
 		  `agree` tinyint(1) NOT NULL DEFAULT '0',
 		  `change_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 		  PRIMARY KEY (`ID`)
-		)" . $charset_collate . " ROW_FORMAT=COMPACT AUTO_INCREMENT=10" ;
+		)" . $charset_collate . " ROW_FORMAT=COMPACT AUTO_INCREMENT=10" ;*/
 	
 	
+$sql_personne_table = "CREATE TABLE IF NOT EXISTS `" . $tableprefix . "occurrence_personne` (
+`ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `nom` varchar(45) NOT NULL,
+  `prenom` varchar(45) NOT NULL,
+  `email` varchar(128) DEFAULT NULL,
+  `tel_mobile` varchar(20) DEFAULT NULL,
+  `tel_fixe` varchar(20) DEFAULT NULL,
+  `id_occurrence` int(10) unsigned NOT NULL,
+  `agree` tinyint(1) NOT NULL DEFAULT '0',
+  `change_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+		  PRIMARY KEY (`ID`)
+)" . $charset_collate . " ENGINE=InnoDB ROW_FORMAT=COMPACT";	
 
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 	dbDelta($sql_activite_table);
