@@ -2,7 +2,7 @@
 }
 
 p  	{
-		margin-botton: 6pt;
+		margin-bottom: 6pt;
 	}
 	
 #activite li {
@@ -10,9 +10,36 @@ p  	{
 }	
 
 table#navigation {
-	border: 0;
+	border-width: 0;
 }
 
 td {
 	border-width: 0;
+}
+
+tr.selected {
+	background-color: lightskyblue;
+}
+
+.seats {
+	color: lightgray;
+	font-size: medium;
+}
+
+table#participants_list {
+	border-collapse: collapse;
+	border: 1px dotted lightgray;
+}
+
+tr.odd {
+	background-color: rgb(220, 220, 220);
+}
+
+table#participants_list td {
+	padding: 5px;
+	margin : 5px 10px 5px 10px;
+}
+
+tr.sep {
+	border-top: 1px solid silver;
 }

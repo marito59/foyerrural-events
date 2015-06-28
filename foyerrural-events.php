@@ -1,9 +1,9 @@
 <?php 
 /* 
   Plugin Name: Foyer Rural - pr&eacute;paration 15 ao&ucirc;t 
-  Plugin URI: http://www.lechevabignien.com/ 
+  Plugin URI: https://github.com/marito59/foyerrural-events
   Description: Ce plugin permet de r&eacute;server une activit&eacute;. 
-  Version: 0.2 
+  Version: 0.3 
   Author: Christian Maritorena
   Author URI: http://www.lechevabignien.com/ 
   License: GPLv3 
@@ -24,7 +24,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-    Contact : Christian Maritorena, maritore59@yahoo.fr
+    Contact : Christian Maritorena, maritore59(at)yahoo.fr
 */
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
@@ -39,6 +39,11 @@ require_once( FOYERRURAL_EVENTS__PLUGIN_DIR . 'foyerrural-events-plugin.php'    
 
 if ( is_admin() ) {
 	require_once( FOYERRURAL_EVENTS__PLUGIN_DIR . 'foyerrural-events-admin.php'     );
+	require_once( FOYERRURAL_EVENTS__PLUGIN_DIR . 'admin/foyerrural-events-admin-activites.php'     );
+	require_once( FOYERRURAL_EVENTS__PLUGIN_DIR . 'admin/foyerrural-events-admin-occurrences.php'     );
+	require_once( FOYERRURAL_EVENTS__PLUGIN_DIR . 'admin/foyerrural-events-admin-participants.php'     );
+  require_once( FOYERRURAL_EVENTS__PLUGIN_DIR . 'admin/edit-activity.php'     );
+  require_once( FOYERRURAL_EVENTS__PLUGIN_DIR . 'admin/edit-occurrence.php'     );
 }
 
 register_activation_hook( __FILE__, 'plugin_activation' );
