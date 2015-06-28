@@ -1,18 +1,9 @@
-<?php 
-/* 
-  Plugin Name: Foyer Rural - pr&eacute;paration 15 ao&ucirc;t 
-  Plugin URI: http://www.lechevabignien.com/ 
-  Description: Ce plugin permet de r&eacute;server une activit&eacute;. 
-  Version: 0.1 
-  Author: Christian Maritorena
-  Author URI: http://www.lechevabignien.com/ 
-  License: CC 3.0 BY-CC-NA 
-*/
-defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
+<?php
+/* admin functions
+ *
+ */
 
-
-
-function getactivitelist_func( $atts ){
+function fr_getactivitelist_func( $atts ){
 	global $wpdb;
 	$tableprefix = $wpdb->prefix . "fr_";
 	$debug = false;
@@ -27,10 +18,13 @@ function getactivitelist_func( $atts ){
 	if ($personne_full != "") {
 		$personne = explode("|", $personne_full);
 		$personne_name = $personne[0]." ".$personne[1];
+	} else { 
+		$personne_name = "";
+		$personne = array("", "", "", "", "");
 	}
 	if ($occurrence_name != "") {
 		$occurrence_list = explode ("|", $occurrence_name);
-	}
+	} else $occurrence_list = array();
 ?>	
 	<script>
 		function process_step(arg) {
@@ -72,11 +66,11 @@ function getactivitelist_func( $atts ){
 		}
 	</script>
 	<div id="phase">
-		<span id="phase_1" style="font-weight: <?php echo ($step==1?"bold":"normal")?>;">1 - Activit&eacute;</span>
-		<span id="phase_2" style="font-weight: <?php echo ($step==2?"bold":"normal")?>;">2 - Horaire</span>
-		<span id="phase_3" style="font-weight: <?php echo ($step==3?"bold":"normal")?>;">3 - Coordonn&eacute;es</span>
-		<span id="phase_4" style="font-weight: <?php echo ($step==4?"bold":"normal")?>;">4 - Confirmation</span>
-		<span id="phase_5" style="font-weight: <?php echo ($step==5?"bold":"normal")?>;">5 - Fin</span>
+		<span id="phase_1"><img src="<?php echo ($step==1?plugin_dir_url( __FILE__ )."images/un-select.png":plugin_dir_url( __FILE__ )."images/un.png")?>" /></span>
+		<span id="phase_2"><img src="<?php echo ($step==2?plugin_dir_url( __FILE__ )."images/deux-select.png":plugin_dir_url( __FILE__ )."images/deux.png")?>" /></span>
+		<span id="phase_3"><img src="<?php echo ($step==3?plugin_dir_url( __FILE__ )."images/trois-select.png":plugin_dir_url( __FILE__ )."images/trois.png")?>" /></span>
+		<span id="phase_4"><img src="<?php echo ($step==4?plugin_dir_url( __FILE__ )."images/quatre-select.png":plugin_dir_url( __FILE__ )."images/quatre.png")?>" /></span>
+	
 	</div>
 	<div id="header_summary">
 		<p style='<?php echo ($personne_name == ""?"display:none;":"")?> margin-bottom:3px'>Vous : <span id="header_nom" style="font-weight:bold; visibility:block;"><?php echo $personne_name ?></span></p>
@@ -96,30 +90,51 @@ function getactivitelist_func( $atts ){
 		<input type="hidden" name="step" value="<?php echo $step ?>" />
     
 	<div id="activite" style="<?php echo ($step==1?"visibility:visible":"display:none") ?>;">
-		<ul>
+		<table>
 <?php
 	if ($step == 1){
 		$ladate = "";
 		$prevdate = "";
+		$prevactiviteid = "";
 		$format = 'Y-m-d H:i:s';
 		
-		$results = $wpdb->get_results( 'SELECT * FROM ' . $tableprefix . 'activite  ORDER BY date' );
+		$query = 'SELECT ' . $tableprefix . 'activite.ID as activite_id, ' . $tableprefix . 'activite.nom as activite_name,   ' . $tableprefix . 'activite.date as activite_date,
+					' . $tableprefix . 'occurrence_activite.ID as occurrence_id, 
+					' . $tableprefix . 'occurrence_activite.heure_debut as heure_debut, ' . $tableprefix . 'occurrence_activite.heure_fin as heure_fin,
+					' . $tableprefix . 'occurrence_activite.nbre_participants as nbre_participants,
+   			(select count(*) from ' . $tableprefix . 'occurrence_personne where id_occurrence=' . $tableprefix . 'occurrence_activite.ID)  as nbre_inscrits
+   			FROM ' . $tableprefix . 'activite LEFT JOIN ' . $tableprefix . 'occurrence_activite ON ' . $tableprefix . 'occurrence_activite.id_activite = ' . $tableprefix . 'activite.ID 
+   			order by ' . $tableprefix . 'activite.date, ' . $tableprefix . 'occurrence_activite.heure_debut';
+		$results = $wpdb->get_results( $query );
+
 		foreach ( $results as $result ) 
 		{
-			//$date = DateTime::createFromFormat($format, $result->date);
-			$date = date_parse($result->date);
+			echo "<tr>";
+			$date = DateTime::createFromFormat($format, $result->activite_date);
+			//$date = date_parse($result->date);
 			//$date = explode('-',$result->date);
-			//$ladate = $date->format("d/m/Y");
-			$ladate = $date["day"].'/'.$date["month"].'/'.$date["year"];
+			$ladate = $date->format("d/m/Y");
+			//$ladate = $date["day"].'/'.$date["month"].'/'.$date["year"];
 			if ($ladate <> $prevdate) {
-				echo "<li>".$ladate."</li>";
+				echo "<td>".$ladate."</td>";
 				$prevdate = $ladate;
+			} else { 
+				echo "<td>&nbsp;</td>";
 			}
-			echo "<div name='activite_".$result->ID."'><input name='activite' type='radio' value='".$result->ID."'>&nbsp;<label>".$result->nom."</label></div>";
+			if ($result->activite_id <> $prevactiviteid) {
+				echo "<td name='activite_".$result->activite_id."'><input name='activite' type='radio' value='".$result->activite_id."'>&nbsp;<label>".$result->activite_name."</label></td>";
+				$prevactiviteid = $result->activite_id;
+			} else {
+				echo "<td>&nbsp;</td>";
+			}
+			$places = $result->nbre_participants - $result->nbre_inscrits;
+			echo "<td name='occurrence'><input id='occurrence".$result->occurrence_id."' type='checkbox' value='".$result->occurrence_id."'>&nbsp;<label>".$result->heure_debut."-".$result->heure_fin."</label> (nbre de places restants : ".$places.")</td>";
+
+			echo "</tr>";
 		}
 	}		
 ?>
-		</ul>
+		</table>
 	</div>
 	<div id="occurrence" style="<?php echo ($step==2?"visibility:visible":"display:none") ?>;">
 		<div id="occurrence_activite">
@@ -181,13 +196,13 @@ if ($occurrence_name != "") {foreach ($occurrence_list as $occurrence) {	echo "<
 		$occurrence_list = explode('|', $occurrence_id);
 		foreach ($occurrence_list as $occurrence) {
 			$data = array(
-				id_occurrence => $occurrence,
-				prenom => $personne[0],
-				nom => $personne[1],
-				tel_fixe => $personne[2],
-				tel_mobile => $personne[3],
-				email => $personne[4],
-				agree => true
+				'id_occurrence' => $occurrence,
+				'prenom' => $personne[0],
+				'nom' => $personne[1],
+				'tel_fixe' => $personne[2],
+				'tel_mobile' => $personne[3],
+				'email' => $personne[4],
+				'agree' => true
 				);
 			$format = array(
 				'%d',
@@ -216,7 +231,7 @@ if ($occurrence_name != "") {foreach ($occurrence_list as $occurrence) {	echo "<
 <?php	
 	return ;
 }
-add_shortcode( 'get_activite_list', 'getactivitelist_func' );
+add_shortcode( 'get_activite_list', 'fr_getactivitelist_func' );
 function my_init() {
 	if (!is_admin()) {
 		wp_enqueue_script('jquery');
@@ -225,4 +240,5 @@ function my_init() {
 	}
 }
 add_action('init', 'my_init', 9999);
+
 ?>
