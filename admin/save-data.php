@@ -43,7 +43,7 @@ echo "\xEF\xBB\xBF"; // UTF-8 BOM
         . " FROM ".$tableprefix."activite"
         . " LEFT JOIN ".$tableprefix."occurrence_activite ON ".$tableprefix."occurrence_activite.id_activite = ".$tableprefix."activite.ID"
         . " LEFT JOIN ".$tableprefix."occurrence_personne ON id_occurrence = ".$tableprefix."occurrence_activite.ID"
-        . " ORDER BY ".$tableprefix."activite.date, ".$tableprefix."activite.order, ".$tableprefix."occurrence_activite.heure_debut, wp_fr_occurrence_personne.change_date";
+        . " ORDER BY ".$tableprefix."activite.date, ".$tableprefix."activite.order, ".$tableprefix."occurrence_activite.heure_debut,".$tableprefix."occurrence_personne.change_date";
 
     if ($debug) $wpdb->show_errors($debug);	
 	$results = $wpdb->get_results( $sql );

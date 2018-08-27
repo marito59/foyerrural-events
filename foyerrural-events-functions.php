@@ -40,12 +40,13 @@ function fr_getactivitelist_func( $atts ){
 	 */
 	$activite_id = (isset($_POST["activite_id"])?htmlspecialchars($_POST["activite_id"]):"");
 	$activite_name = (isset($_POST["activite_name"])?htmlspecialchars($_POST["activite_name"]):"");
-	
+//	if ($step ==1) {$activity_id = ""; $activity_name="";}
 	/*
 	 * occurrence : scheduke information (time frame selected)
 	 */
 	$occurrence_id = (isset($_POST["occurrence_id"])?htmlspecialchars($_POST["occurrence_id"]):"") ;
 	$occurrence_name = (isset($_POST["occurrence_name"])?htmlspecialchars($_POST["occurrence_name"]):"") ;
+//	if ($step ==1) {$occurrence_id = ""; $occurrence_name="";}
 
 	if ($occurrence_name != "") {
 		$occurrence_list = explode ("|", $occurrence_name);
@@ -106,12 +107,12 @@ function fr_getactivitelist_func( $atts ){
 				$personne += "|"+jQuery('input[id=personne_email]').val();
 
 				jQuery("input[name=personne_full]").val($personne);
-/*			else if (arg=4) {
+			} else if (arg==4) {
 				jQuery("input[name=activite_id]").val(0);
 				jQuery("input[name=activite_name]").val("");
 				jQuery("input[name=occurrence_id]").val(0);
 				jQuery("input[name=occurrence_name]").val("");
-				jQuery("input[name=step]").val(0);*/
+//				jQuery("input[name=step]").val(0);
 			}			
 			return true; // submit form
 		}
@@ -180,7 +181,7 @@ function fr_getactivitelist_func( $atts ){
 		<input type="hidden" name="step" value="<?php echo $step ?>" />
     
 	<div id="activite" style="<?php echo ($step==1?"visibility:visible":"display:none") ?>;">
-		<table>
+		<table style='width: 100%;'>
 <?php
 	if ($step == 1){
 		$ladate = "";
@@ -205,19 +206,19 @@ function fr_getactivitelist_func( $atts ){
 //			$ladate = $date->format("d/m/Y");
 			$ladate = $result->activite_date;
 			if ($ladate <> $prevdate) {
-				echo "<td>".$ladate."</td>";
+				echo "<td style='width: 20%;'>".$ladate."</td>";
 				$prevdate = $ladate;
 			} else { 
 				echo "<td>&nbsp;</td>";
 			}
 			if ($result->activite_id <> $prevactiviteid) {
-				echo "<td name='activitef'><input name='activite' id='activite_".$result->activite_id."' value='activite_".$result->activite_id."' type='radio' onchange='process_activity(this);' /><label>".$result->activite_name."</label></td>";
+				echo "<td  style='width: 50%;' name='activitef'><input name='activite' id='activite_".$result->activite_id."' value='activite_".$result->activite_id."' type='radio' onchange='process_activity(this);' /><label>".$result->activite_name."</label></td>";
 				$prevactiviteid = $result->activite_id;
 			} else {
 				echo "<td>&nbsp;</td>";
 			}
 			$places = $result->nbre_participants - $result->nbre_inscrits;
-			echo "<td name='occurrence'><input style='visibility:hidden;' name='activite_".$result->activite_id."' id='occurrence_".$result->occurrence_id."' type='checkbox' value='".$result->occurrence_id."' oninput='process_input();'>&nbsp;<label>".$result->heure_debut."-".$result->heure_fin."</label><br /><span class='seats'>(places restantes : ".$places.")</span></td>";
+			echo "<td  style='width: 30%;' name='occurrence'><input style='visibility:hidden;' name='activite_".$result->activite_id."' id='occurrence_".$result->occurrence_id."' type='checkbox' value='".$result->occurrence_id."' oninput='process_input();'>&nbsp;<label>".$result->heure_debut."-".$result->heure_fin."</label><br /><span class='seats'>(places restantes : ".$places.")</span></td>";
 
 			echo "</tr>";
 		}
